@@ -44,15 +44,26 @@ velociraptor-threat-hunting/
 
 ## Hunts & Findings
 
-| Hunt | Technique | MITRE ATT&CK | Report |
-|------|-----------|--------------|--------|
-| *(in progress)* | | | |
+| Hunt | Tactic | MITRE ATT&CK | Result | Report |
+|------|--------|--------------|--------|--------|
+| CertUtil LOLBin Download | Defense Evasion | [T1105](https://attack.mitre.org/techniques/T1105/) | No anomaly detected — clean baseline established | [Report](./reports/DefenseEvasion_CertUtil_Hunt.md) |
+| Network Share Enumeration | Discovery | [T1135](https://attack.mitre.org/techniques/T1135/) | **Finding:** Non-standard share `Backup_Internal` in public path — violates least privilege | [Report](./reports/Discovery_NetworkShares_Hunt.md) |
+| Suspicious PowerShell Execution | Execution | [T1059.001](https://attack.mitre.org/techniques/T1059/001/) | **Simulated hit:** `-EncodedCommand` + `-WindowStyle Hidden` detected via `cmd.exe` parent | [Report](./reports/Execution_SuspiciousPowerShell_Hunt.md) |
+| New Service Installation | Persistence | [T1543.003](https://attack.mitre.org/techniques/T1543/003/) | No anomaly detected — all services running from trusted paths; baseline captured | [Report](./reports/Persistence_NewServices_Hunt.md) |
 
-Hunt reports live in [`/reports`](./reports/). Each report includes the VQL used, raw findings, and analyst commentary.
+Hunt reports live in [`/reports`](./reports/). Each report includes the VQL artifact used, raw findings, and analyst commentary.
 
 ## Custom VQL Artifacts
 
-Custom artifacts are in [`/artifacts`](./artifacts/). Each artifact targets a specific threat behavior and is designed to be portable across deployments.
+All artifacts are in [`/artifacts`](./artifacts/), bundled into a single fleet-wide hunt via [`hunts/Global_Threat_Hunt.yaml`](./hunts/Global_Threat_Hunt.yaml).
+
+| Artifact | Purpose |
+|----------|---------|
+| `Custom.Windows.Persistence.RunKeys` | Flags binaries in Run/RunOnce registry keys executing from Temp/AppData paths |
+| `Custom.Windows.Persistence.NewServices` | Detects services running outside standard Windows paths |
+| `Custom.Windows.Execution.SuspiciousPowerShell` | Identifies PowerShell with obfuscation/bypass flags |
+| `Custom.Windows.Discovery.NetworkShares` | Enumerates non-default network shares |
+| `Custom.Windows.DefenseEvasion.CertUtilDownload` | Detects `certutil.exe` abused for payload download |
 
 ## Setup
 
@@ -67,9 +78,9 @@ Full deployment walkthrough in [`docs/setup.md`](./docs/setup.md), covering:
 ## Skills Demonstrated
 
 - Velociraptor server/client deployment from scratch
-- VQL artifact development for threat hunting
+- Custom VQL artifact development for threat hunting
 - DFIR workflow: hunt design → collection → triage → reporting
-- MITRE ATT&CK technique mapping
+- MITRE ATT&CK technique mapping across Persistence, Execution, Discovery, and Defense Evasion tactics
 
 ## References
 

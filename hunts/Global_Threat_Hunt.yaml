@@ -1,0 +1,24 @@
+description: "Monthly Fleet-Wide Threat Hunt - Advanced Persistence and Execution Check"
+
+# Targets all Windows endpoints
+client_selector: "os_host ~ '.*' AND OS = 'windows'"
+
+# This bundles all your custom artifacts into one hunt
+artifacts:
+  - Custom.Windows.Persistence.RunKeys
+  - Custom.Windows.Persistence.NewServices
+  - Custom.Windows.Execution.SuspiciousPowerShell
+  - Custom.Windows.Discovery.NetworkShares
+  - Custom.Windows.DefenseEvasion.CertUtilDownload
+
+# Resource limits to ensure we don't lag the user's machine
+# 10% CPU limit is standard for background hunts
+parameters:
+  - name: MaxCPU
+    value: 10
+  - name: OpsPerSecond
+    value: 50
+
+# Scheduling and Expiry
+expires: 2026-12-31T23:59:59Z
+stop_on_error: false

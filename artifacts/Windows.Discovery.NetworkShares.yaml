@@ -1,0 +1,9 @@
+name: Custom.Windows.Discovery.NetworkShares
+description: Lists all active network shares on the endpoint to identify unauthorized or sensitive data exposures.
+sources:
+  - precondition:
+      SELECT OS From info() where OS = 'windows'
+  query: |
+    SELECT Name, Path, Remark, Type
+    FROM wmi(query="SELECT * FROM Win32_Share")
+    WHERE NOT Path =~ '(?i)^C:\\(Windows|Users|Program Files)'

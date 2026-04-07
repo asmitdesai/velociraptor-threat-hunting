@@ -1,0 +1,9 @@
+name: Custom.Windows.Persistence.NewServices
+description: Extracts Windows services to identify potentially malicious or unauthorized background processes.
+sources:
+  - precondition:
+      SELECT OS From info() where OS = 'windows'
+  query: |
+    SELECT Name, DisplayName, PathName, ServiceType, StartMode, State
+    FROM wmi(query="SELECT * FROM Win32_Service")
+    WHERE NOT PathName =~ '(?i)^C:\\(Windows|System32|Program Files)'

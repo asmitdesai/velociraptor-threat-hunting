@@ -1,0 +1,11 @@
+name: Custom.Windows.DefenseEvasion.CertUtilDownload
+description: Detects certutil.exe being used with -urlcache or -split to download remote payloads.
+sources:
+  - precondition:
+      SELECT OS From info() where OS = 'windows'
+  query: |
+    SELECT Pid, Ppid, CommandLine, Exe, 
+           timestamp(epoch=CreationTimestamp/1000) AS Created
+    FROM proc_dump()
+    WHERE Name =~ '(?i)certutil.exe'
+      AND CommandLine =~ '(?i)urlcache|split'

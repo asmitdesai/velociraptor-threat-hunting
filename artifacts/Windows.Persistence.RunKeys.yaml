@@ -1,0 +1,25 @@
+name: Custom.Windows.Persistence.RunKeys
+description: |
+  Hunts for persistence via Windows Run/RunOnce registry keys. 
+  Specifically flags binaries executing from suspicious paths like Temp or AppData.
+
+parameters:
+  - name: KeyGlobs
+    default: |
+      HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Run*\*
+      HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\RunOnce*\*
+      HKEY_USERS\*\Software\Microsoft\Windows\CurrentVersion\Run*\*
+      HKEY_USERS\*\Software\Microsoft\Windows\CurrentVersion\RunOnce*\*
+  - name: SuspiciousPaths
+    default: "Temp|AppData|Local|Roaming|ProgramData"
+
+sources:
+  - precondition:
+      SELECT OS From info() where OS = 'windows'
+    query: |
+      SELECT Name, 
+             Data as ExecutablePath, 
+             FullPath as RegistryKey,
+             timestamp(epoch=Mtime) as LastModified
+      FROM glob(globs=split(string=KeyGlobs, sep="\n"), accessor="registry")
+      WHERE Data =~ SuspiciousPaths

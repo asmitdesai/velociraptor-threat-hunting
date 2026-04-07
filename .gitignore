@@ -1,0 +1,9 @@
+# Ignore real Velociraptor config files (contains CA private keys and crypto fields)
+server/server.config.yaml
+client/client.config.yaml
+
+# Ignore generated Windows installer files
+*.msi
+
+# Ignore macOS system files (since you are working on a Mac host)
+.DS_Store
